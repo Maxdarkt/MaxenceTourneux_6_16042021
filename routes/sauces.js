@@ -5,7 +5,10 @@ const likeCtrl = require("../controllers/like");
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 
+//routes Like
 router.post("/:id/like", auth, multer, likeCtrl.likeThing);
+
+//routes Sauces
 router.post("/", auth, multer, saucesCtrl.createThing);
 router.put("/:id", auth, multer, saucesCtrl.modifyThing);
 router.delete("/:id", auth, saucesCtrl.deleteThing);

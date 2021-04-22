@@ -8,8 +8,8 @@ exports.createThing = (req, res, next) => {
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     likes : 0,
     dislikes : 0,
-    usersLiked : 0,
-    usersDisLiked : 0,
+    usersLiked : "",
+    usersDisLiked : "",
   });
   thing.save()
     .then(() => res.status(201).json({ message: 'Objet créé !'}))
