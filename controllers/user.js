@@ -2,20 +2,31 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+const Thing = require("../models/Thing");
 
 exports.signup = (req, res, next) => {
+  let regexPassword = /[\w.-]{8,16}/;
+  if(regexPassword.test(req.body.password)){
     bcrypt.hash(req.body.password, 10)
-      .then(hash => {
-        const user = new User({
-          email: req.body.email,
-          password: hash
-        });
-        user.save()
-          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-          .catch(error => res.status(400).json({ error }));
+    .then(hash => {
+      const user = new User({
+        email: req.body.email,
+        password: hash
+      });
+      user.save(function (err){
+        console.log(user.email);
+        console.log(user.password);
       })
-      .catch(error => res.status(500).json({ error }));
-  };
+        .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+        .catch(error => res.status(400).json({ error }));
+    })
+    .catch(error => res.status(500).json({ error }));
+  }
+  else{
+    res.status(400).json({ message: 'Un mot de passe doit contenir 8 caractères au minimum !'})
+  }
+
+};
 
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })

@@ -3,6 +3,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require('path');
 const multer = require("multer");
+//sécurité
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+require('dotenv').config();
+
 
 const saucesRoutes = require("./routes/sauces");
 const userRoutes = require("./routes/user");
@@ -10,8 +16,7 @@ const userRoutes = require("./routes/user");
 const app = express();
 
 mongoose
-  .connect(
-    "mongodb+srv://Maxdarkt:Maxtou74!@cluster0.hhaml.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  .connect(process.env.DB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
@@ -30,9 +35,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(bodyParser.json());
+const limiter = rateLimit({
+  windowMs: 15 *60 * 1000,
+  max: 100
+});
+
+//sécurité
+app.use(limiter);
+app.use(helmet());
+app.use(mongoSanitize());
+
 app.use(express.json());
 
+//routes
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use("/api/sauces", saucesRoutes);
